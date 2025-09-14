@@ -53,7 +53,8 @@ build_kernel_devel(){
 	echo "kernel version: $kernver"
 
 	mkdir -p $kernel_build
-	# rm rootfs_debian_x86_64/lib/modules/$kernver/build
+	# Before that, it is necessary to ensure that the complete parent directory exists
+	rm rootfs_debian_x86_64/lib/modules/$kernver/build
 	cp -a include $kernel_build
 	cp Makefile .config Module.symvers System.map $kernel_build
 	mkdir -p $kernel_build/arch/x86/
@@ -127,7 +128,7 @@ run_qemu_debian(){
 		sudo qemu-system-x86_64 -m 12288 \
 			-nographic $SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
-			-drive if=none,file=rootfs_debian_x86_64.ext4,id=hd0 \
+			-drive if=none,file=$rootfs_image,id=hd0 \
 			-device virtio-blk-pci,drive=hd0 \
 			-netdev user,id=mynet\
 			-device virtio-net-pci,netdev=mynet \
