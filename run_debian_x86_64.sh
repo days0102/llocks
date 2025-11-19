@@ -46,7 +46,8 @@ lustre_cn_3_path=$ROOTFS_PATH/rootfs_cn_3.ext4
 # delete -cpu host to avoid slurmd -C different from lscpu
 CN_SMP="-smp cpus=3,sockets=1,cores=3,threads=1 -enable-kvm"
 MASTER_SMP="-smp 4 -enable-kvm -cpu host"
-LUSTRE_SMP="-smp 2 -enable-kvm -cpu host"
+LUSTRE_OSS_SMP="-smp 2 -enable-kvm -cpu host"
+LUSTRE_MDS_SMP="-smp 4 -enable-kvm -cpu host"
 
 if [ $# -lt 1 ]; then
 	echo "Usage: $0 [arg]"
@@ -414,6 +415,115 @@ update_lustre_rootfs(){
 		fi
 }
 
+update_lls_rootfs(){
+		if [ ! -f $lustre_mds_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_mds_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_mds_path
+
+			rm -rf $rootfs_path
+		fi
+
+		if [ ! -f $lustre_oss_1_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_oss_1_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_oss_1_path
+
+			rm -rf $rootfs_path
+		fi
+
+		if [ ! -f $lustre_oss_2_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_oss_2_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_oss_2_path
+
+			rm -rf $rootfs_path
+		fi
+
+		if [ ! -f $lustre_oss_3_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_oss_3_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_oss_3_path
+
+			rm -rf $rootfs_path
+		fi
+}
+
+update_llc_rootfs(){
+		if [ ! -f $lustre_master_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_master_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_master_path
+
+			rm -rf $rootfs_path
+		fi
+}
+
 update_client_rootfs(){
 		if [ ! -f $client_rootfs_image ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
@@ -561,7 +671,7 @@ run_wbc_cn2(){
 
 run_lustre_oss_1(){
 		sudo qemu-system-x86_64 -m 4096\
-			-nographic $LUSTRE_SMP -kernel arch/x86/boot/bzImage \
+			-nographic $LUSTRE_OSS_SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
 			-drive if=none,file=$lustre_oss_1_path,id=hd0 \
 			-device virtio-blk-pci,drive=hd0 \
@@ -582,7 +692,7 @@ run_lustre_oss_1(){
 
 run_lustre_oss_2(){
 		sudo qemu-system-x86_64 -m 4096\
-			-nographic $LUSTRE_SMP -kernel arch/x86/boot/bzImage \
+			-nographic $LUSTRE_OSS_SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
 			-drive if=none,file=$lustre_oss_2_path,id=hd0 \
 			-device virtio-blk-pci,drive=hd0 \
@@ -597,7 +707,7 @@ run_lustre_oss_2(){
 
 run_lustre_oss_3(){
 		sudo qemu-system-x86_64 -m 4096\
-			-nographic $LUSTRE_SMP -kernel arch/x86/boot/bzImage \
+			-nographic $LUSTRE_OSS_SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
 			-drive if=none,file=$lustre_oss_3_path,id=hd0 \
 			-device virtio-blk-pci,drive=hd0 \
@@ -614,7 +724,7 @@ run_lustre_oss_3(){
 
 run_lustre_mds(){
 		sudo qemu-system-x86_64 -m 4096\
-			-nographic $LUSTRE_SMP -kernel arch/x86/boot/bzImage \
+			-nographic $LUSTRE_MDS_SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
 			-drive if=none,file=$lustre_mds_path,id=hd0 \
 			-device virtio-blk-pci,drive=hd0 \
@@ -851,6 +961,12 @@ case $1 in
 		;;
 	update_lustre_rootfs)
 		update_lustre_rootfs
+		;;
+	update_lls_rootfs)
+		update_lls_rootfs
+		;;
+	update_llc_rootfs)
+		update_llc_rootfs
 		;;
 	run_cluster)
 		# 启动 cn1, cn2, cn3, mds, oss1 等节点并行运行
