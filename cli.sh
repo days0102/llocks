@@ -3,7 +3,7 @@
  # @Author: Outsider
  # @Date: 2025-11-09 19:06:18
  # @LastEditors: Outsider
- # @LastEditTime: 2025-11-19 15:50:07
+ # @LastEditTime: 2025-11-20 19:10:57
  # @Description: In User Settings Edit
  # @FilePath: /llocks/client/lock/cli.sh
 ### 
@@ -125,11 +125,11 @@ lru_resize_disable()
 	# can't save/restore lru_size since it reports the *current* lru count
 
 	echo "$size_param=0->$lru_size"
-	echo "$age_param=$old_age->3900s"
+	echo "$age_param=$old_age->${lru_max_age}s"
 
 	# increase lru_max_age also, to prevent lock cancel due to age
 	$LCTL set_param -n $size_param=$lru_size
-	$LCTL set_param -n $age_param=3900s
+	$LCTL set_param -n $age_param=${lru_max_age}s
 	stack_trap "cancel_lru_locks $dev || true"
 	stack_trap "lru_resize_enable $dev || true"
 	stack_trap "$LCTL set_param -n $age_param=$old_age || true"
@@ -230,21 +230,24 @@ cleanup(){
 trap cleanup EXIT INT TERM
 
 # caclulate lock limits based on memory size
-lock_reclaim_threshold_mb=$(echo "($mem * 0.2)/1" | bc)
+lock_reclaim_threshold_mb_default=$(echo "($mem * 0.2)/1" | bc)
 lock_limit_mb=$(echo "($mem * 0.3)/1" | bc)
 
 # Ensure item_per_np is calculated based on new lock limits
 item_per_np=$(echo "($lock_limit_mb * ($lock_per_mb + $lock_per_mb)) / $np" | bc)
 
-elc=1
-debug=0
-lru_resize=1
-lock_reclaim_pol=1
-lock_reclaim_batch=512
-lock_reclaim_batch_per=1
+# if set on environment, use those values
+elc=${elc:-1} 
+debug=${debug:-0} 
+lru_resize=${lru_resize:-1}
+lru_max_age=${lru_max_age:-3900}
+lock_reclaim_pol=${lock_reclaim_pol:-1}
+lock_reclaim_batch=${lock_reclaim_batch:-512}
+lock_reclaim_batch_per=${lock_reclaim_batch_per:-1}
+lock_reclaim_threshold_mb=${lock_reclaim_threshold_mb:-$lock_reclaim_threshold_mb_calc}
 
-echo "================ Testing with mem=${mem}MB ================"
-echo "  mem: ${mem}MB"
+echo "================ Testing Start ================"
+echo "  mem: ${mem}MB(for calculation only)"
 echo "  np: $np"
 echo "  item_per_np: $item_per_np"
 echo "  lock_reclaim_threshold_mb: $lock_reclaim_threshold_mb"
@@ -257,6 +260,7 @@ echo "  lock_reclaim_batch_per: $lock_reclaim_batch_per"
 echo "  elc: $elc"
 echo "  debug: $debug"
 echo "  lru_resize: $lru_resize"
+echo "  lru_max_age: $lru_max_age"
 echo
 
 # remote configuration on MDS
@@ -306,6 +310,10 @@ fi
 # Final cleanup before test
 sudo lctl clear
 
+# Clear system caches
+echo "--- CLI -> Clearing system caches (drop_caches) ---"
+echo 3 | sudo tee /proc/sys/vm/drop_caches
+
 # start remote monitoring on MDS
 echo "--- 3. Starting Performance Monitor on MDS ---"
 start_mds_monitor
@@ -319,8 +327,8 @@ start_cli_monitor
 # Run mdtest
 echo "--- 5. Running mdtest concurrently with monitoring ---"
 mpirun -np $np mdtest -D -T -z 5 -b 5 -n $item_per_np -d $test_path 2>&1 | tee >(tail -n 20 > res_mdtest.txt)
-# mpirun -np $np mdtest -D -T -z 5 -b 5 -n $item_per_np -d $test_path 2>&1 | tee >(tail -n 20 >> res_mdtest.txt)
-# mpirun -np $np mdtest -D -T -z 5 -b 5 -n $item_per_np -d $test_path 2>&1 | tee >(tail -n 20 >> res_mdtest.txt)
+mpirun -np $np mdtest -D -T -z 5 -b 5 -n $item_per_np -d $test_path 2>&1 | tee >(tail -n 20 >> res_mdtest.txt)
+mpirun -np $np mdtest -D -T -z 5 -b 5 -n $item_per_np -d $test_path 2>&1 | tee >(tail -n 20 >> res_mdtest.txt)
 
 sleep 5 # Wait a moment for any final traces
 

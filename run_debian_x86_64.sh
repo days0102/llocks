@@ -522,6 +522,69 @@ update_llc_rootfs(){
 
 			rm -rf $rootfs_path
 		fi
+		
+		if [ ! -f $lustre_cn_1_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_cn_1_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_cn_1_path
+
+			rm -rf $rootfs_path
+		fi
+
+		if [ ! -f $lustre_cn_2_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_cn_2_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_cn_2_path
+
+			rm -rf $rootfs_path
+		fi
+
+		if [ ! -f $lustre_cn_3_path ]; then
+			echo "rootfs image is not present..., pls run build_rootfs"
+		else
+			echo "update rootfs ..."
+
+			mkdir -p $rootfs_path
+			echo "mount ext4 image into rootfs_debian_x86_64"
+			mount -t ext4 $lustre_cn_3_path $rootfs_path -o loop
+
+			make install
+			make modules_install -j $JOBCOUNT
+			make headers_install
+
+			build_kernel_devel
+
+			umount $rootfs_path
+			chmod 777 $lustre_cn_3_path
+
+			rm -rf $rootfs_path
+		fi
 }
 
 update_client_rootfs(){
