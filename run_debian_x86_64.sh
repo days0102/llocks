@@ -117,7 +117,7 @@ update_rootfs(){
 		if [ ! -f $rootfs_image ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $rootfs_image ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -140,7 +140,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_master_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_master_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -161,7 +161,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_mds_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_mds_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -182,7 +182,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_oss_1_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_1_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -203,7 +203,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_oss_2_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_2_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -224,7 +224,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_oss_3_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_3_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -246,7 +246,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_cn_1_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_1_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -267,7 +267,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_cn_2_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_2_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -288,7 +288,7 @@ update_cluster_rootfs(){
 		if [ ! -f $lustre_cn_3_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_3_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -312,7 +312,7 @@ update_lustre_rootfs(){
 		if [ ! -f $lustre_master_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_master_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -333,7 +333,7 @@ update_lustre_rootfs(){
 		if [ ! -f $lustre_mds_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_mds_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -354,7 +354,7 @@ update_lustre_rootfs(){
 		if [ ! -f $lustre_oss_1_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_1_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -375,7 +375,7 @@ update_lustre_rootfs(){
 		if [ ! -f $lustre_oss_2_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_2_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -396,7 +396,7 @@ update_lustre_rootfs(){
 		if [ ! -f $lustre_oss_3_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_3_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -419,7 +419,7 @@ update_lls_rootfs(){
 		if [ ! -f $lustre_mds_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_mds_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -440,7 +440,7 @@ update_lls_rootfs(){
 		if [ ! -f $lustre_oss_1_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_1_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -461,7 +461,7 @@ update_lls_rootfs(){
 		if [ ! -f $lustre_oss_2_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_2_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -482,7 +482,7 @@ update_lls_rootfs(){
 		if [ ! -f $lustre_oss_3_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_oss_3_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -505,7 +505,7 @@ update_llc_rootfs(){
 		if [ ! -f $lustre_master_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_master_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -526,7 +526,7 @@ update_llc_rootfs(){
 		if [ ! -f $lustre_cn_1_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_1_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -547,7 +547,7 @@ update_llc_rootfs(){
 		if [ ! -f $lustre_cn_2_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_2_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -568,7 +568,7 @@ update_llc_rootfs(){
 		if [ ! -f $lustre_cn_3_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $lustre_cn_3_path ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
@@ -591,7 +591,7 @@ update_client_rootfs(){
 		if [ ! -f $client_rootfs_image ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
-			echo "update rootfs ..."
+			echo "update rootfs $client_rootfs_image ..."
 
 			mkdir -p $rootfs_path
 			echo "mount ext4 image into rootfs_debian_x86_64"
