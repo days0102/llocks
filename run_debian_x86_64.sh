@@ -113,6 +113,32 @@ check_root(){
 		fi
 }
 
+# Function: Prompts the user for confirmation before proceeding with a critical action.
+# Only accepts 'y' or 'Y' as confirmation. All other inputs are treated as cancellation.
+# Argument 1 ($1): Descriptive text of the action to be performed (e.g., "update the root filesystem").
+# Returns: 0 (Confirmed) if the user enters 'y' or 'Y'; 1 (Cancelled) otherwise.
+confirm_action() {
+    local prompt_text=$1
+    local response
+
+	# Prompt the user for input and store the response.
+	read -r -p "WARNING: Are you sure you want to ${prompt_text}? Type 'y' to confirm or any other key to cancel: " response
+
+	# Check the user's response (strict check for single character 'y' or 'Y')
+	case "$response" in
+		[yY])
+			# Only 'y' or 'Y' is accepted.
+			echo "Confirmation received. Proceeding with ${prompt_text}..."
+			return 0 # User confirmed, return success status code (0)
+			;;
+		*)
+			# Any other input, including 'yes', 'n', 'no', empty input, or other keys, results in cancellation.
+			echo "Operation cancelled by user."
+			return 1 # User cancelled, return failure status code (1)
+			;;
+	esac
+}
+
 update_rootfs(){
 		if [ ! -f $rootfs_image ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
@@ -641,7 +667,7 @@ run_qemu_debian(){
 			-netdev user,id=mynet\
 			-device virtio-net-pci,netdev=mynet \
 			-netdev tap,id=tapnet,script=$PWD/net_up,downscript=$PWD/net_down \
-			-device virtio-net-pci,netdev=tapnet,mac=80:d4:39:62:2d:8c \
+			-device virtio-net-pci,netdev=tapnet,mac=80:d4:39:62:2d:ac \
 			$DBG
 			# --fsdev local,id=kmod_dev,path=./kmodules,security_model=none \
 			# -device virtio-9p-pci,fsdev=kmod_dev,mount_tag=kmod_mount\
@@ -871,6 +897,7 @@ case $1 in
 		;;
 	update_rootfs)
 		check_root
+		confirm_action "update_rootfs" && \
 		update_rootfs
 		;;
 	run)
@@ -910,6 +937,7 @@ case $1 in
 		run_lustre_client
 		;;
 	update_client_rootfs)
+		confirm_action "update_client_rootfs" && \
 		update_client_rootfs
 		;;
 	run_wbc_cn0)
@@ -1020,15 +1048,19 @@ case $1 in
 		run_master
 		;;
 	update_cluster_rootfs)
+		confirm_action "update_cluster_rootfs" && \
 		update_cluster_rootfs
 		;;
 	update_lustre_rootfs)
+		confirm_action "update_lustre_rootfs" && \
 		update_lustre_rootfs
 		;;
 	update_lls_rootfs)
+		confirm_action "update_lls_rootfs" && \
 		update_lls_rootfs
 		;;
 	update_llc_rootfs)
+		confirm_action "update_llc_rootfs" && \
 		update_llc_rootfs
 		;;
 	run_cluster)
