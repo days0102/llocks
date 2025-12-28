@@ -334,7 +334,7 @@ update_cluster_rootfs(){
 
 }
 
-update_lustre_rootfs(){
+update_llocks_rootfs(){
 		if [ ! -f $lustre_master_path ]; then
 			echo "rootfs image is not present..., pls run build_rootfs"
 		else
@@ -868,7 +868,7 @@ run_cn_3(){
 }
 
 run_master(){
-		sudo qemu-system-x86_64 -m 8094\
+		sudo qemu-system-x86_64 -m 8094,slots=2,maxmem=32G\
 			-nographic $MASTER_SMP -kernel arch/x86/boot/bzImage \
 			-append "noinintrd console=ttyS0 crashkernel=256M root=/dev/vda rootfstype=ext4 rw loglevel=8 nokaslr" \
 			-drive if=none,file=$lustre_master_path,id=hd0 \
@@ -877,6 +877,8 @@ run_master(){
 			-device virtio-net-pci,netdev=mynet\
 			-netdev tap,id=tapnet,script=$PWD/net_up,downscript=$PWD/net_down \
 			-device virtio-net-pci,netdev=tapnet,mac=80:d4:39:62:2d:8c \
+			-object memory-backend-file,id=mem1,share,mem-path=$ROOTFS_PATH/master.pmem,size=4G \
+			-device virtio-pmem-pci,memdev=mem1,id=nv1 \
 			$DBG
 }
 
@@ -1051,9 +1053,9 @@ case $1 in
 		confirm_action "update_cluster_rootfs" && \
 		update_cluster_rootfs
 		;;
-	update_lustre_rootfs)
+	update_llocks_rootfs)
 		confirm_action "update_lustre_rootfs" && \
-		update_lustre_rootfs
+		update_llocks_rootfs
 		;;
 	update_lls_rootfs)
 		confirm_action "update_lls_rootfs" && \
