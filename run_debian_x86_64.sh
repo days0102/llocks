@@ -140,500 +140,92 @@ confirm_action() {
 }
 
 update_rootfs(){
-		if [ ! -f $rootfs_image ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $rootfs_image ..."
+	local target_image=$1
 
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $rootfs_image $rootfs_path -o loop
+    if [ -z "$target_image" ]; then
+        echo "Error: No image path provided."
+        return 1
+    fi
 
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
 
-			build_kernel_devel
+	if [ ! -f $target_image ]; then
+		echo "rootfs image is not present..., pls run build_rootfs"
+		return 1
+	fi
 
-			umount $rootfs_path
-			chmod 777 $rootfs_image
+	echo "update rootfs $target_image ..."
 
-			rm -rf $rootfs_path
-		fi
+	mkdir -p $rootfs_path
+	echo "mount ext4 image into rootfs_debian_x86_64"
+	mount -t ext4 $target_image $rootfs_path -o loop
+	if [ $? -ne 0 ]; then
+		echo "ERROR: failed to mount $target_image"
+		exit 1 
+	fi
+
+	make install
+	make modules_install -j $JOBCOUNT
+	make headers_install
+
+	build_kernel_devel
+
+	echo "Syncing data..."
+	sync
+
+	umount $rootfs_path
+	if [ $? -ne 0 ]; then
+		echo "ERROR: Failed to unmount $rootfs_path!"
+		echo "The device is busy. Check running processes."
+
+		# if command -v fuser >/dev/null; then
+		# 	echo "Processes occupying the directory:"
+		# 	fuser -m -v "$rootfs_path"
+		# fi
+		
+		echo "ABORTING: Script stopped to prevent data loss."
+		exit 1
+	fi
+
+	chmod 777 $target_image
+
+	rm -rf $rootfs_path
 }
 
 update_cluster_rootfs(){
-		if [ ! -f $lustre_master_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_master_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_master_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_master_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_mds_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_mds_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_mds_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_mds_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_1_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_1_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_1_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_1_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_2_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_2_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_2_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_2_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_3_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_3_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_3_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_3_path
-
-			rm -rf $rootfs_path
-		fi
-
-
-		if [ ! -f $lustre_cn_1_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_1_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_1_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_1_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_cn_2_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_2_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_2_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_2_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_cn_3_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_3_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_3_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_3_path
-
-			rm -rf $rootfs_path
-		fi
-
+	update_rootfs $lustre_master_path
+	update_rootfs $lustre_mds_path
+	update_rootfs $lustre_oss_1_path
+	update_rootfs $lustre_oss_2_path
+	update_rootfs $lustre_oss_3_path
+	update_rootfs $lustre_cn_1_path
+	update_rootfs $lustre_cn_2_path
+	update_rootfs $lustre_cn_3_path
 }
 
 update_llocks_rootfs(){
-		if [ ! -f $lustre_master_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_master_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_master_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_master_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_mds_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_mds_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_mds_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_mds_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_1_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_1_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_1_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_1_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_2_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_2_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_2_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_2_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_3_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_3_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_3_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_3_path
-
-			rm -rf $rootfs_path
-		fi
+	update_rootfs $lustre_master_path
+	update_rootfs $lustre_mds_path
+	update_rootfs $lustre_oss_1_path
+	update_rootfs $lustre_oss_2_path
+	update_rootfs $lustre_oss_3_path
 }
 
 update_lls_rootfs(){
-		if [ ! -f $lustre_mds_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_mds_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_mds_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_mds_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_1_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_1_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_1_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_1_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_2_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_2_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_2_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_2_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_oss_3_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_oss_3_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_oss_3_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_oss_3_path
-
-			rm -rf $rootfs_path
-		fi
+	update_rootfs $lustre_mds_path
+	update_rootfs $lustre_oss_1_path
+	update_rootfs $lustre_oss_2_path
+	update_rootfs $lustre_oss_3_path
 }
 
 update_llc_rootfs(){
-		if [ ! -f $lustre_master_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_master_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_master_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_master_path
-
-			rm -rf $rootfs_path
-		fi
-		
-		if [ ! -f $lustre_cn_1_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_1_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_1_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_1_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_cn_2_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_2_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_2_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_2_path
-
-			rm -rf $rootfs_path
-		fi
-
-		if [ ! -f $lustre_cn_3_path ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $lustre_cn_3_path ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $lustre_cn_3_path $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $lustre_cn_3_path
-
-			rm -rf $rootfs_path
-		fi
+	update_rootfs $lustre_master_path
+	update_rootfs $lustre_cn_1_path
+	update_rootfs $lustre_cn_2_path
+	update_rootfs $lustre_cn_3_path
 }
 
 update_client_rootfs(){
-		if [ ! -f $client_rootfs_image ]; then
-			echo "rootfs image is not present..., pls run build_rootfs"
-		else
-			echo "update rootfs $client_rootfs_image ..."
-
-			mkdir -p $rootfs_path
-			echo "mount ext4 image into rootfs_debian_x86_64"
-			mount -t ext4 $client_rootfs_image $rootfs_path -o loop
-
-			make install
-			make modules_install -j $JOBCOUNT
-			make headers_install
-
-			build_kernel_devel
-
-			umount $rootfs_path
-			chmod 777 $client_rootfs_image
-
-			rm -rf $rootfs_path
-		fi
+	update_rootfs $client_rootfs_image
 }
 
 build_rootfs(){
@@ -900,7 +492,7 @@ case $1 in
 	update_rootfs)
 		check_root
 		confirm_action "update_rootfs" && \
-		update_rootfs
+		update_rootfs $rootfs_image
 		;;
 	run)
 
